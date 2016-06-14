@@ -29,7 +29,13 @@ class MyServer(BaseHTTPRequestHandler):
         json.dump(data_object, self.wfile)
 
     def do_GET(self):
-        self._send_file("index.html")
+        action = self.path.lstrip('/').split('/')[0]
+        if len(action) == 0:
+            self._send_file("index.html")
+        elif hasattr(self, action):
+            getattr(self, action)()
+        else:
+            self._set_headers(http_status=404, content_type=None)
 
     def do_HEAD(self):
         self._set_headers(content_type=None)
